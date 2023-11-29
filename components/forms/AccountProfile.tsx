@@ -19,6 +19,8 @@ import { ChangeEvent, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
+import { updatedUser } from "@/lib/actions/user.actions";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Props {
   user: {
@@ -35,6 +37,8 @@ interface Props {
 const AccountProfile = ({ user, btnTitle }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const { startUpload } = useUploadThing("media");
+  const router = useRouter();
+  const pathname = usePathname();
 
   const form = useForm({
     resolver: zodResolver(UserValidation),
@@ -85,8 +89,22 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
     }
 
     // TODO: Update user profile
+    await updatedUser({
+      userId: user.id,
+      username: values.username,
+      name: values.name,
+      bio: values.bio,
+      image: values.profile_photo,
+      path: pathname,
+    });
+
+    if (pathname === "/profile/edit") {
+      router.back();
+    } else {
+      router.push("/");
+    }
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    // console.log(values);
   };
 
   return (
@@ -130,6 +148,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   onChange={(e) => handleImage(e, field.onChange)}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -148,6 +167,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -166,6 +186,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -184,6 +205,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
