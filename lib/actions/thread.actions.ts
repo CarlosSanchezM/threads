@@ -68,8 +68,6 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
 
   const posts = await postQuery.exec();
 
-  console.log(posts);
-
   const isNext = totalPostCount > skipAmount + posts.length;
 
   return { posts, isNext };
