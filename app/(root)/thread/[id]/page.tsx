@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 const Page = async ({ params }: { params: { id: string } }) => {
   if (!params.id) return null;
   const user = await currentUser();
-  console.log(user);
   if (!user) return null;
 
   const userInfo = await fetchUser(user.id);
