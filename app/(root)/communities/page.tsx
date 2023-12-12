@@ -1,7 +1,7 @@
 const Page = () => {
   return (
     <section className="head-text mb-10">
-      <h1>Community</h1>
+      <h1>Communities</h1>
     </section>
   );
 };
