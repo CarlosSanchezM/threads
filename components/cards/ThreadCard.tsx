@@ -25,6 +25,24 @@ const ThreadCard = ({
   comments,
   isComment,
 }: Props) => {
+  // Separar el contenido por los saltos de línea y preservar los renglones vacíos
+  const formattedContent = content.split("\n").map((paragraph, index) => {
+    if (paragraph.trim() === "") {
+      // Si el párrafo está vacío, agregar un espacio no rompible para mantener el renglón vacío
+      return (
+        <p className="mt-2 text-small-regular text-light-2" key={index}>
+          &nbsp;
+        </p>
+      );
+    }
+    // Si el párrafo tiene contenido, mantener el formato con la etiqueta <p>
+    return (
+      <p className="mt-2 text-small-regular text-light-2" key={index}>
+        {paragraph}
+      </p>
+    );
+  });
+
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
@@ -51,7 +69,9 @@ const ThreadCard = ({
                 {author.name}
               </h4>
             </Link>
-            <p className="mt-2 text-small-regular text-light-2">{content}</p>
+            {formattedContent}
+            {/* {<p className="mt-2 text-small-regular text-light-2">{content}</p>} */}
+            {/*<p className="mt-2 text-small-regular text-light-2">{content}</p>*/}
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3.5">
                 <Image
