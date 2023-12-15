@@ -51,18 +51,21 @@ const ThreadCard = ({
     );
   });
   // console.log(content);
-  // console.log(comments.length);
+  console.log(comments.length);
   // console.log(isComment);
-  // console.log(parentId);
+  console.log(parentId);
   // console.log("likes ", likes);
   const hasLikes = isLiked || (likes && likes.length > 0);
   const hasComments = comments.length > 0;
   const hasReplies = hasComments && comments.length > 0;
+  console.log(
+    hasComments && parentId === undefined ? "px-0 xs:px7" : "bg-dark-2 p-7"
+  );
 
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
-        hasComments && parentId !== undefined ? "px-0 xs:px7" : "bg-dark-2 p-7"
+        parentId === undefined ? "bg-dark-2 p-7" : "px-0 xs:px7"
       }`}
     >
       <div className="flex items-start justify-between">
