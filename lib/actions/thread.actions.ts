@@ -7,6 +7,7 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
+import { ObjectId } from "mongoose";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -52,6 +53,7 @@ interface Params {
   text: string;
   author: string;
   communityId: string | null;
+  likesP: string[] | null;
   path: string;
 }
 
@@ -59,6 +61,7 @@ export async function createThread({
   text,
   author,
   communityId,
+  likesP,
   path,
 }: Params) {
   try {
@@ -68,12 +71,11 @@ export async function createThread({
       { id: communityId },
       { _id: 1 }
     );
-    console.log(communityIdObject);
-
     const createdThread = await Thread.create({
       text,
       author,
       community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
+      likes: likesP,
     });
 
     // Update User model
@@ -241,5 +243,71 @@ export async function addCommentToThread(
   } catch (err) {
     console.error("Error while adding comment:", err);
     throw new Error("Unable to add comment");
+  }
+}
+
+export async function updateLikes(
+  userId: string,
+  threadId: string,
+  path: string = "/"
+) {
+  try {
+    connectToDB();
+    const thread = await Thread.findById(threadId);
+    const user = await User.findOne({ id: userId });
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    const likesArray: any[] = thread.likes;
+
+    // Verificar si el userId está en el array de likes
+    const isUserLiked: boolean = likesArray?.some((like) =>
+      like.equals(user._id)
+    );
+
+    if (isUserLiked) {
+      // console.log("El usuario está en el array de likes");
+      await Thread.findByIdAndUpdate(threadId, { $pull: { likes: user._id } });
+      revalidatePath(path);
+    } else {
+      // console.log("El usuario NO está en el array de likes");
+      // console.log(thread);
+      await Thread.findByIdAndUpdate(threadId, {
+        $push: { likes: user._id },
+      });
+      revalidatePath(path);
+    }
+  } catch (err: any) {
+    // console.error("Error while like a thread:", err);
+    throw new Error(`Error while like a thread ${err.message}`);
+  }
+}
+export async function likeState(userId: string, threadId: string) {
+  try {
+    connectToDB();
+    const thread = await Thread.findById(threadId);
+    const user = await User.findOne({ id: userId });
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    const likesArray: any[] = thread.likes;
+
+    // Verificar si el userId está en el array de likes
+    const isUserLiked: boolean = likesArray?.some((like) =>
+      like.equals(user._id)
+    );
+
+    if (isUserLiked) {
+      // console.log("El usuario está en el array de likes");
+      return true;
+    } else {
+      // console.log("El usuario NO está en el array de likes");
+      return false;
+    }
+  } catch (err: any) {
+    // console.error("Error while like a thread:", err);
+    throw new Error(`Error while like a thread ${err.message}`);
   }
 }

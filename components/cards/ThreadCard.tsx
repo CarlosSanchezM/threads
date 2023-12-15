@@ -1,6 +1,9 @@
+import { updateLikes } from "@/lib/actions/thread.actions";
 import { formatDateString } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import HeartBottom from "../shared/HeartBottom";
 
 interface Props {
   id: string;
@@ -11,7 +14,10 @@ interface Props {
   community: { id: string; name: string; image: string } | null;
   createdAt: string;
   comments: { author: { image: string } }[];
+  likes: string[];
   isComment?: boolean;
+  isLiked?: boolean;
+  path?: string;
 }
 
 const ThreadCard = ({
@@ -23,9 +29,11 @@ const ThreadCard = ({
   community,
   createdAt,
   comments,
+  likes,
   isComment,
+  isLiked,
+  path,
 }: Props) => {
-  // Separar el contenido por los saltos de línea y preservar los renglones vacíos
   const formattedContent = content.split("\n").map((paragraph, index) => {
     if (paragraph.trim() === "") {
       // Si el párrafo está vacío, agregar un espacio no rompible para mantener el renglón vacío
@@ -42,11 +50,19 @@ const ThreadCard = ({
       </p>
     );
   });
+  // console.log(content);
+  // console.log(comments.length);
+  // console.log(isComment);
+  // console.log(parentId);
+  // console.log("likes ", likes);
+  const hasLikes = isLiked || (likes && likes.length > 0);
+  const hasComments = comments.length > 0;
+  const hasReplies = hasComments && comments.length > 0;
 
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
-        isComment ? "px-0 xs:px7" : "bg-dark-2 p-7"
+        hasComments && parentId !== undefined ? "px-0 xs:px7" : "bg-dark-2 p-7"
       }`}
     >
       <div className="flex items-start justify-between">
@@ -58,7 +74,7 @@ const ThreadCard = ({
                 fill
                 alt="Profile image"
                 className="cursor-pointer rounded-full"
-              ></Image>
+              />
             </Link>
 
             <div className="thread-card_bar" />
@@ -69,17 +85,19 @@ const ThreadCard = ({
                 {author.name}
               </h4>
             </Link>
-            {formattedContent}
+            <div className="overflow-y-auto max-h-28 custom-scrollbar">
+              {formattedContent}
+            </div>
             {/* {<p className="mt-2 text-small-regular text-light-2">{content}</p>} */}
             {/*<p className="mt-2 text-small-regular text-light-2">{content}</p>*/}
-            <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
+            <div
+              className={`${hasComments && "mb-10"} mt-5 flex flex-col gap-3`}
+            >
               <div className="flex gap-3.5">
-                <Image
-                  src={"/assets/heart-gray.svg"}
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
+                <HeartBottom
+                  userId={currentUserId}
+                  threadId={id}
+                  pathProp={path}
                 />
                 <Link href={`/thread/${id}`}>
                   <Image
@@ -105,21 +123,21 @@ const ThreadCard = ({
                   className="cursor-pointer object-contain"
                 />
               </div>
-
-              {isComment && comments.length > 0 && (
-                <Link href={`/thread/${id}`}>
-                  <p className="mt-1 text-subtle-medium text-gray-1">
-                    {comments.length} replies
-                  </p>
-                </Link>
-              )}
+              <div className="mt-1 text-subtle-medium text-gray-1">
+                {hasLikes && <p className="inline">{likes.length} likes</p>}
+                {hasReplies && (
+                  <Link href={`/thread/${id}`}>
+                    <p className="inline"> {comments.length} replies</p>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>
         {/*TODO DeleteThread */}
         {/*TODO Show comment logos */}
       </div>
-      {!isComment && community && (
+      {!hasComments && community && (
         <Link
           href={`/communities/${community.id}`}
           className="mt-5 flex items-center"

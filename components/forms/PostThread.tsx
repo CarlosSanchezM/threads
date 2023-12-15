@@ -29,10 +29,6 @@ function PostThread({ userId }: Props) {
   const pathname = usePathname();
 
   const { organization } = useOrganization();
-
-  {
-    console.log(organization ? organization.id : null);
-  }
   const form = useForm<z.infer<typeof ThreadValidation>>({
     resolver: zodResolver(ThreadValidation),
     defaultValues: {
@@ -46,6 +42,7 @@ function PostThread({ userId }: Props) {
       text: values.thread,
       author: userId,
       communityId: organization ? organization.id : null,
+      likesP: [],
       path: pathname,
     });
 
