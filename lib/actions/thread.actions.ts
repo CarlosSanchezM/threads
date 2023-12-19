@@ -7,7 +7,6 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
-import { ObjectId } from "mongoose";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -249,7 +248,7 @@ export async function addCommentToThread(
 export async function updateLikes(
   userId: string,
   threadId: string,
-  path: string = "/"
+  path?: string
 ) {
   try {
     connectToDB();
@@ -267,8 +266,10 @@ export async function updateLikes(
     );
 
     if (isUserLiked) {
-      // console.log("El usuario está en el array de likes");
       await Thread.findByIdAndUpdate(threadId, { $pull: { likes: user._id } });
+      // if (path !== "/" && path) {
+      //   revalidatePath(path);
+      // }
       //revalidatePath(path);
     } else {
       // console.log("El usuario NO está en el array de likes");
@@ -276,14 +277,20 @@ export async function updateLikes(
       await Thread.findByIdAndUpdate(threadId, {
         $push: { likes: user._id },
       });
-      //revalidatePath(path);
+      // if (path !== "/" && path) {
+      //   revalidatePath(path);
+      // }
     }
   } catch (err: any) {
     // console.error("Error while like a thread:", err);
     throw new Error(`Error while like a thread ${err.message}`);
   }
 }
-export async function likeState(userId: string, threadId: string) {
+export async function likeState(
+  userId: string,
+  threadId: string,
+  path?: string
+) {
   try {
     connectToDB();
     const thread = await Thread.findById(threadId);
@@ -306,15 +313,7 @@ export async function likeState(userId: string, threadId: string) {
       likesState: likeCounter,
       commentsState: commentsCounter == undefined ? 0 : commentsCounter,
     };
-
     return likeStateObject;
-    // if (isUserLiked) {
-    //   // console.log("El usuario está en el array de likes");
-    //   return true;
-    // } else {
-    //   // console.log("El usuario NO está en el array de likes");
-    //   return false;
-    // }
   } catch (err: any) {
     // console.error("Error while like a thread:", err);
     throw new Error(`Error while like a thread ${err.message}`);

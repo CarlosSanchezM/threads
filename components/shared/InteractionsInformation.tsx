@@ -9,7 +9,7 @@ interface Props {
   pathProp?: string;
 }
 
-const HeartBottom = ({ userId, threadId, pathProp }: Props) => {
+const InteractionsInformation = ({ userId, threadId, pathProp }: Props) => {
   const [isLike, setLikes] = useState(false);
   const [like, setLike] = useState(0);
   const [comment, setComments] = useState(0);
@@ -26,7 +26,7 @@ const HeartBottom = ({ userId, threadId, pathProp }: Props) => {
   }, [userId, threadId]);
   //Manejador del like
   const handleLikeClick = async () => {
-    await updateLikes(userId, threadId, pathProp);
+    await updateLikes(userId, threadId);
     const updatedLikeState = await likeState(userId, threadId);
     setLikes(updatedLikeState.isUserLikedState);
     setLike(updatedLikeState.likesState);
@@ -83,4 +83,4 @@ const HeartBottom = ({ userId, threadId, pathProp }: Props) => {
   );
 };
 
-export default HeartBottom;
+export default InteractionsInformation;

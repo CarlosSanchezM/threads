@@ -1,10 +1,7 @@
-import { updateLikes } from "@/lib/actions/thread.actions";
 import { formatDateString } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import HeartBottom from "../shared/HeartBottom";
-import LikeReplieCounter from "../utilsComponents/LikeReplieCounter";
+import InteractionsInformation from "../shared/InteractionsInformation";
 
 interface Props {
   id: string;
@@ -16,7 +13,6 @@ interface Props {
   createdAt: string;
   comments: { author: { image: string } }[];
   isComment?: boolean;
-  isLiked?: boolean;
   path?: string;
 }
 
@@ -30,7 +26,6 @@ const ThreadCard = ({
   createdAt,
   comments,
   isComment,
-  isLiked,
   path,
 }: Props) => {
   const formattedContent = content.split("\n").map((paragraph, index) => {
@@ -49,17 +44,7 @@ const ThreadCard = ({
       </p>
     );
   });
-  // console.log(content);
-  //console.log(comments.length);
-  // console.log(isComment);
-  //console.log(parentId);
-  // console.log("likes ", likes);
-  // const hasLikes = isLiked || (likes && likes.length > 0);
   const hasComments = comments.length > 0;
-  // const hasReplies = hasComments && comments.length > 0;
-  // console.log(
-  //   hasComments && parentId === undefined ? "px-0 xs:px7" : "bg-dark-2 p-7"
-  // );
 
   return (
     <article
@@ -90,25 +75,15 @@ const ThreadCard = ({
             <div className="overflow-y-auto max-h-28 custom-scrollbar">
               {formattedContent}
             </div>
-            {/* {<p className="mt-2 text-small-regular text-light-2">{content}</p>} */}
-            {/*<p className="mt-2 text-small-regular text-light-2">{content}</p>*/}
             <div
               className={`${hasComments && "mb-10"} mt-5 flex flex-col gap-3`}
             >
-              <HeartBottom
+              <InteractionsInformation
                 key={id}
                 userId={currentUserId}
                 threadId={id}
                 pathProp={path}
               />
-              {/* <div className="mt-1 text-subtle-medium text-gray-1">
-                {hasLikes && <p className="inline">{likes.length} likes</p>}
-                {hasReplies && (
-                  <Link href={`/thread/${id}`}>
-                    <p className="inline"> {comments.length} replies</p>
-                  </Link>
-                )}
-              </div> */}
             </div>
           </div>
         </div>
