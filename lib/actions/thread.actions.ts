@@ -269,14 +269,14 @@ export async function updateLikes(
     if (isUserLiked) {
       // console.log("El usuario está en el array de likes");
       await Thread.findByIdAndUpdate(threadId, { $pull: { likes: user._id } });
-      revalidatePath(path);
+      //revalidatePath(path);
     } else {
       // console.log("El usuario NO está en el array de likes");
       // console.log(thread);
       await Thread.findByIdAndUpdate(threadId, {
         $push: { likes: user._id },
       });
-      revalidatePath(path);
+      //revalidatePath(path);
     }
   } catch (err: any) {
     // console.error("Error while like a thread:", err);
@@ -293,19 +293,28 @@ export async function likeState(userId: string, threadId: string) {
     }
 
     const likesArray: any[] = thread.likes;
+    const likeCounter = likesArray?.length;
+    const commentsArray: any[] = thread.children;
+    const commentsCounter = commentsArray?.length;
 
     // Verificar si el userId está en el array de likes
     const isUserLiked: boolean = likesArray?.some((like) =>
       like.equals(user._id)
     );
+    const likeStateObject = {
+      isUserLikedState: isUserLiked,
+      likesState: likeCounter,
+      commentsState: commentsCounter == undefined ? 0 : commentsCounter,
+    };
 
-    if (isUserLiked) {
-      // console.log("El usuario está en el array de likes");
-      return true;
-    } else {
-      // console.log("El usuario NO está en el array de likes");
-      return false;
-    }
+    return likeStateObject;
+    // if (isUserLiked) {
+    //   // console.log("El usuario está en el array de likes");
+    //   return true;
+    // } else {
+    //   // console.log("El usuario NO está en el array de likes");
+    //   return false;
+    // }
   } catch (err: any) {
     // console.error("Error while like a thread:", err);
     throw new Error(`Error while like a thread ${err.message}`);

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import HeartBottom from "../shared/HeartBottom";
+import LikeReplieCounter from "../utilsComponents/LikeReplieCounter";
 
 interface Props {
   id: string;
@@ -14,7 +15,6 @@ interface Props {
   community: { id: string; name: string; image: string } | null;
   createdAt: string;
   comments: { author: { image: string } }[];
-  likes: string[];
   isComment?: boolean;
   isLiked?: boolean;
   path?: string;
@@ -29,7 +29,6 @@ const ThreadCard = ({
   community,
   createdAt,
   comments,
-  likes,
   isComment,
   isLiked,
   path,
@@ -55,9 +54,9 @@ const ThreadCard = ({
   // console.log(isComment);
   //console.log(parentId);
   // console.log("likes ", likes);
-  const hasLikes = isLiked || (likes && likes.length > 0);
+  // const hasLikes = isLiked || (likes && likes.length > 0);
   const hasComments = comments.length > 0;
-  const hasReplies = hasComments && comments.length > 0;
+  // const hasReplies = hasComments && comments.length > 0;
   // console.log(
   //   hasComments && parentId === undefined ? "px-0 xs:px7" : "bg-dark-2 p-7"
   // );
@@ -96,44 +95,20 @@ const ThreadCard = ({
             <div
               className={`${hasComments && "mb-10"} mt-5 flex flex-col gap-3`}
             >
-              <div className="flex gap-3.5">
-                <HeartBottom
-                  userId={currentUserId}
-                  threadId={id}
-                  pathProp={path}
-                />
-                <Link href={`/thread/${id}`}>
-                  <Image
-                    src={"/assets/reply.svg"}
-                    alt="reply"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
-                  />
-                </Link>
-                <Image
-                  src={"/assets/repost.svg"}
-                  alt="repost"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
-                <Image
-                  src={"/assets/share.svg"}
-                  alt="share"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
-              </div>
-              <div className="mt-1 text-subtle-medium text-gray-1">
+              <HeartBottom
+                key={id}
+                userId={currentUserId}
+                threadId={id}
+                pathProp={path}
+              />
+              {/* <div className="mt-1 text-subtle-medium text-gray-1">
                 {hasLikes && <p className="inline">{likes.length} likes</p>}
                 {hasReplies && (
                   <Link href={`/thread/${id}`}>
                     <p className="inline"> {comments.length} replies</p>
                   </Link>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
